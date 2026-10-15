@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnóstico</title>
+  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="extras.css?v=6">
+  <script src="config.js?v=6"></script>
+  <script src="app.js?v=6"></script>
+  <script src="extras.js?v=6"></script>
+  <style>
+    #diag { position: fixed; inset: auto 1rem 1rem 1rem; z-index: 999; max-width: 560px; margin-inline: auto;
+            padding: 1rem 1.2rem; border-radius: 12px; background: #fff; color: #141B2B;
+            border: 2px solid #2457F0; font: 15px/1.5 system-ui, sans-serif; box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+    #diag h2 { margin: 0 0 .5rem; font: 700 1.1rem system-ui, sans-serif; }
+    #diag ul { list-style: none; margin: 0; padding: 0; }
+    #diag li { padding: .25rem 0; border-top: 1px solid #e3e8ef; }
+    #diag .dica { display: block; color: #8a1c1c; font-size: .9rem; }
+    #diag .info { color: #566176; }
+  </style>
+</head>
+<body data-page="inicio">
+  <header id="topo"></header>
+  <main id="main"></main>
+  <footer id="rodape"></footer>
+
+  <div id="diag"><h2>A verificar os ficheiros do site...</h2></div>
+
+  <script>
+    /* Página de diagnóstico: abre-a como abres o index.html. Diz-te o que está a falhar. */
+    window.addEventListener("load", () => setTimeout(async () => {
+      const linhas = [];
+      const teste = (texto, ok, dica) => linhas.push({ texto, ok, dica });
+      const info  = (texto) => linhas.push({ texto, info: true });
+      const cor = (n) => getComputedStyle(n).color;
+
+      teste("config.js carregado", typeof SITE !== "undefined", "O config.js não carregou: confirma que está na mesma pasta que as páginas.");
+      teste("app.js desenhou a página", !!document.querySelector(".hero"), "O app.js não carregou ou deu erro (abre a consola com F12).");
+
+      // Há um extra.css (sem "s") na pasta? Era o nome dos ficheiros antigos.
+      const temNomeAntigo = await new Promise((ok) => {
+        const l = document.createElement("link");
+        l.rel = "stylesheet"; l.href = "extra.css?teste=" + Date.now();
+        l.onload = () => ok(true); l.onerror = () => ok(false);
+        document.head.append(l); setTimeout(() => ok(false), 1500);
+      });
+      const passos = "Na pasta do site, apaga extra.js e extra.css e põe lá os ficheiros extras.js e extras.css (com \"s\") que vêm no portfolio.zip. Depois carrega Ctrl+F5.";
+      if (temNomeAntigo) {
+        linhas.push({ texto: "Encontrei um ficheiro extra.css (sem \"s\") na pasta", ok: false,
+          dica: "É a causa mais provável: as páginas pedem extras.js e extras.css (com \"s\"), mas na tua pasta os ficheiros têm o nome antigo. " + passos });
+      }
+
+      const versaoJs = document.documentElement.dataset.extras;
+      teste(`extras.js é a versão nova (6)`, versaoJs === "6",
+        versaoJs ? `O extras.js que está a ser usado é antigo (versão ${versaoJs}). Substitui-o e carrega Ctrl+F5.`
+                 : "O extras.js não está a correr: não existe na pasta com este nome exato (extras.js, com \"s\"). " + passos);
+
+      const versaoCss = getComputedStyle(document.documentElement).getPropertyValue("--extras-css").trim();
+      teste("extras.css é a versão nova (6)", versaoCss === "6",
+        versaoCss ? `O extras.css em uso é antigo (versão ${versaoCss}).` : "O extras.css não carregou ou é antigo. " + passos);
+
+      const opc = (typeof OPCOES !== "undefined") ? OPCOES : {};
+      teste("Efeito dos títulos ligado no config.js", opc.animacoes !== false && !(opc.efeitos && opc.efeitos.titulosColoridos === false),
+        "No config.js, OPCOES.animacoes tem de ser true e OPCOES.efeitos.titulosColoridos não pode ser false.");
+
+      // Teste real: simula o rato em cima do título e vê se as cores mudam
+      const titulo = document.querySelector(".hero-nome");
+      const letras = titulo ? [...titulo.querySelectorAll(".letra, .letra-t")] : [];
+      teste("O título do topo foi dividido em letras", letras.length > 0,
+        "As letras não existem: o extras.js não correu (ver acima) ou deu erro na consola.");
+      const nasSecoes = document.querySelectorAll(".secao h2 .letra-t").length;
+      teste("Os títulos das secções (ex.: Competências) também têm letras animadas", nasSecoes > 0,
+        "Os títulos das secções não foram divididos em letras: confirma que o extras.js é a versão 6.");
+      if (letras.length) {
+        const antes = letras.map(cor);
+        letras[0].dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+        await new Promise((r) => setTimeout(r, 700));
+        const mudaram = letras.filter((l, i) => cor(l) !== antes[i]).length;
+        teste("Ao passar o rato numa letra, só essa letra muda de cor", mudaram === 1,
+          mudaram === 0 ? "A letra não mudou de cor: diz-me isto, que investigo."
+                        : `Mudaram ${mudaram} letras em vez de 1: confirma que o extras.js é a versão 6.`);
+      }
+
+      info(`Sistema com "reduzir movimento": ${matchMedia("(prefers-reduced-motion: reduce)").matches ? "sim" : "não"}`);
+      info(`Navegador: ${navigator.userAgent.replace(/\).*/, ")")}`);
+
+      const falhas = linhas.filter((l) => l.ok === false).length;
+      document.getElementById("diag").innerHTML =
+        `<h2>${falhas ? `❌ ${falhas} problema(s) encontrado(s)` : "✅ Está tudo certo neste navegador"}</h2><ul>` +
+        linhas.map((l) => l.info
+          ? `<li class="info">${l.texto}</li>`
+          : `<li>${l.ok ? "✅" : "❌"} ${l.texto}${l.ok ? "" : `<span class="dica">${l.dica}</span>`}</li>`).join("") + "</ul>";
+    }, 2500));
+  </script>
+</body>
+</html>
