@@ -326,5 +326,7 @@ const GALERIA = {
     { ficheiro: "STOP MOTION.mp4",  titulo: "STOP MOTION", legenda: "Video", categoria: "Video" },
     { ficheiro: "Trabalho 4 Planos _O Último Bilhete_.mp4",  titulo: "O Último Bilhete", legenda: "Video", categoria: "Video" },
     { ficheiro: "Poster6.png",  titulo: "Anúncio para um grupo de oficias de um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
+    { ficheiro: "MP MAS.png", titulo: "Anúncio para um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
+    { ficheiro: "RB Halloween.png", titulo: "Anúncio para um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
   ],
 };
