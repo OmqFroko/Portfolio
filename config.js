@@ -99,6 +99,7 @@ const INICIO = {
     "Gosto de explorar a lógica por detrás do código e de desenvolver projetos que desafiem a minha criatividade e capacidade técnica.",
     "Cada erro é uma oportunidade de aprender e cada projeto concluído fortalece as minhas competências.",
     "Procuro crescer como desenvolvedor de forma consistente, aprofundando a programação e dedicação à área do design digital.",
+    "Eu vivo em Santarém."
   ],
   foto: "eu.png",   // ex.: "eu.jpg" (em Media/). Deixa vazio para não mostrar foto.
 
