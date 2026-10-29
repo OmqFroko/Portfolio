@@ -100,7 +100,7 @@ const INICIO = {
     "Gosto de explorar a lógica por detrás do código e de desenvolver projetos que desafiem a minha criatividade e capacidade técnica.",
     "Cada erro é uma oportunidade de aprender e cada projeto concluído fortalece as minhas competências.",
     "Procuro crescer como desenvolvedor de forma consistente, aprofundando a programação e dedicação à área do design digital.",
-    "Eu vivo em Santarém."
+    "Eu vivo em Santarém, Portugal."
   ],
   foto: "eu.png",   // ex.: "eu.jpg" (em Media/). Deixa vazio para não mostrar foto.
 
@@ -137,6 +137,7 @@ const INICIO = {
     { nome: "Email",   valor: "martimrdiogo@gmail.com", link: "martimrdiogo@gmail.com" },
     { nome: "Discord", valor: "institute_leader",        link: "" },
     { nome: "Youtube",  valor: "M4rSCP",            link: "https://www.youtube.com/@MartimProductions" },
+    { nome: "Telemóvel",  valor: "+351 969 448 443"},
   ],
 };
 
