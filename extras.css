@@ -5,7 +5,7 @@
    Com "reduzir movimento" ativo no sistema, o style.css já desliga as animações.
    ========================================================================== */
 
-:root { --extras-css: 6; }                      /* versão deste ficheiro (a página diagnostico.html lê-a) */
+:root { --extras-css: 7; }                      /* versão deste ficheiro (a página diagnostico.html lê-a) */
 
 /* ---------- Transições entre páginas (Chrome, Edge, Safari recentes) ---------- */
 

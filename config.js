@@ -23,6 +23,7 @@ const PASTAS = {
   media:   "Media/",
   imagens: "Imagens/",
   videos:  "Videos/",
+  documentos: "Documentos/",   // PDFs
 };
 
 const OPCOES = {
@@ -271,9 +272,14 @@ const PROJETOS = {
 
 /* ---------- 5. Imagens de trabalho ---------- */
 
-/* Cada item: ficheiro (em Imagens/ ou, se for vídeo, em Videos/), titulo,
+/* Cada item: ficheiro (em Imagens/; vídeos em Videos/; PDFs em Documentos/), titulo,
    legenda e categoria (cria os filtros). O tipo é detetado pela extensão:
    .mp4 .webm .mov .m4v .ogv são vídeos, o resto são imagens. */
+/* PDFs na galeria: põe o ficheiro em Documentos/ e escreve o nome com .pdf.
+   "miniatura" (opcional) é a imagem de capa, em Imagens/. Sem ela, mostra um cartão com o título.
+   O PDF abre dentro da página, com botões para abrir noutro separador e descarregar. Exemplo:
+     { ficheiro: "Portfolio.pdf", miniatura: "Portfolio-capa.png", titulo: "Portfólio", legenda: "Versão em PDF", categoria: "Design" },
+   Nos projetos também funciona: pode estar na lista "imagens" de um projeto. */
 const GALERIA = {
   titulo: "Imagens de trabalho",
   intro:  "Capturas, cenas e vídeos do meu trabalho. Clica para ver em ponto grande.",
@@ -328,5 +334,6 @@ const GALERIA = {
     { ficheiro: "Poster6.png",  titulo: "Anúncio para um grupo de oficias de um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
     { ficheiro: "MP MAS.png", titulo: "Anúncio para um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
     { ficheiro: "RB Halloween.png", titulo: "Anúncio para um grupo de comunidade", legenda: "Graphics", categoria: "GFX" },
+    { ficheiro: "Solidari _ Manual de Normas v2.pdf", miniatura: "Solidari.png", titulo: "Manual de Normas", legenda: "Versão em PDF", categoria: "Design" },
   ],
 };

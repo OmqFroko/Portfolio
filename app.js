@@ -58,6 +58,9 @@
   const limitar = (n, min, max) => Math.min(max, Math.max(min, Number(n) || 0));
 
   const ehVideo = (ficheiro) => /\.(mp4|webm|mov|m4v|ogv)$/i.test(ficheiro || "");
+  const ehPdf   = (ficheiro) => /\.pdf$/i.test(ficheiro || "");
+
+  PASTAS.documentos ??= "Documentos/";      // pasta dos PDFs (se o config.js não a definir)
 
   /* Constrói o caminho: pasta + nome (ou devolve links completos tal como estão). */
   const caminho = (pasta, ficheiro) =>
@@ -85,6 +88,7 @@
     esq:    '<path d="M15 5l-7 7 7 7"/>',
     dir:    '<path d="M9 5l7 7-7 7"/>',
     play:   '<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>',
+    pdf:    '<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/>',
     tema:   '<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>',
   };
 
@@ -116,7 +120,25 @@
   }
 
   /* Imagem ou vídeo, conforme a extensão */
+  /* PDF: visualizador do navegador + botões para abrir e descarregar
+     (em telemóveis o visualizador embutido é limitado, por isso os botões estão sempre visíveis) */
+  function visualizadorPdf(ficheiro, titulo) {
+    const url = caminho("documentos", ficheiro);
+    const quadro = h("iframe", { class: "pdf-quadro", src: `${url}#view=FitH`, title: titulo || ficheiro, loading: "lazy" });
+    /* Num servidor (ex.: GitHub Pages) dá para saber se o ficheiro existe */
+    if (/^https?:/.test(location.protocol)) {
+      fetch(url, { method: "HEAD" })
+        .then((r) => { if (!r.ok) quadro.replaceWith(placeholder("documentos", ficheiro)); })
+        .catch(() => {});
+    }
+    return h("div", { class: "pdf" }, quadro,
+      h("div", { class: "pdf-acoes" },
+        h("a", { class: "btn btn-principal", href: url, target: "_blank", rel: "noopener", text: "Abrir PDF" }),
+        h("a", { class: "btn", href: url, download: "", text: "Descarregar" })));
+  }
+
   function midia(ficheiro, alt = "") {
+    if (ehPdf(ficheiro)) return visualizadorPdf(ficheiro, alt);
     if (!ehVideo(ficheiro)) return imagem(ficheiro, alt, "imagens");
     const video = h("video", { src: caminho("videos", ficheiro), controls: true, playsinline: true, preload: "metadata" });
     video.addEventListener("error", () => video.replaceWith(placeholder("videos", ficheiro)), { once: true });
@@ -418,9 +440,9 @@
     }
 
     itens.forEach((f, i) => miniaturas.append(h("button", {
-      class: "miniatura", type: "button", "aria-label": `Ver ${ehVideo(f) ? "vídeo" : "imagem"} ${i + 1}`,
+      class: "miniatura", type: "button", "aria-label": `Ver ${ehVideo(f) ? "vídeo" : ehPdf(f) ? "documento" : "imagem"} ${i + 1}`,
       onclick: () => mostrar(i),
-    }, ehVideo(f) ? icone("play", 22) : imagem(f, ""))));
+    }, ehVideo(f) ? icone("play", 22) : ehPdf(f) ? icone("pdf", 22) : imagem(f, ""))));
 
     const dialogo = criarDialogo("projeto", h("div", { class: "proj-corpo" },
       h("div", { class: "proj-cab" },
@@ -491,16 +513,28 @@
 
   function miniaturaGaleria(item, aoAbrir) {
     const video = ehVideo(item.ficheiro);
-    const conteudo = video
-      ? h("video", { src: caminho("videos", item.ficheiro) + "#t=0.5", preload: "metadata", muted: true, playsinline: true, "aria-hidden": "true", tabindex: "-1" })
-      : imagem(item.ficheiro, "");
-    if (video) conteudo.addEventListener("error", () => conteudo.replaceWith(placeholder("videos", item.ficheiro)), { once: true });
+    const pdf = ehPdf(item.ficheiro);
 
+    let conteudo;
+    if (pdf) {
+      /* com "miniatura" mostra essa imagem; sem ela, mostra um cartão com o ícone e o título */
+      conteudo = item.miniatura
+        ? imagem(item.miniatura, "")
+        : h("div", { class: "pdf-capa" }, icone("pdf", 56), h("span", { text: item.titulo || item.ficheiro }));
+    } else if (video) {
+      conteudo = h("video", { src: caminho("videos", item.ficheiro) + "#t=0.5", preload: "metadata", muted: true, playsinline: true, "aria-hidden": "true", tabindex: "-1" });
+      conteudo.addEventListener("error", () => conteudo.replaceWith(placeholder("videos", item.ficheiro)), { once: true });
+    } else {
+      conteudo = imagem(item.ficheiro, "");
+    }
+
+    const tipo = pdf ? " (PDF)" : video ? " (vídeo)" : "";
     return h("button", {
       class: "mosaico-item", type: "button", onclick: aoAbrir,
-      "aria-label": `${item.titulo || item.ficheiro}${video ? " (vídeo)" : ""}: abrir em ponto grande`,
+      "aria-label": `${item.titulo || item.ficheiro}${tipo}: abrir em ponto grande`,
     },
       conteudo,
+      pdf ? h("span", { class: "selo-video" }, icone("pdf", 14), "PDF") : null,
       video ? h("span", { class: "selo-video" }, icone("play", 14), "Vídeo") : null,
       item.titulo ? h("span", { class: "mosaico-legenda", text: item.titulo }) : null);
   }
@@ -515,7 +549,7 @@
     /* Carrega já as imagens vizinhas, para a navegação ser instantânea. */
     function precarregar(i) {
       const item = lista[(i + lista.length) % lista.length];
-      if (item && !ehVideo(item.ficheiro)) new Image().src = caminho("imagens", item.ficheiro);
+      if (item && !ehVideo(item.ficheiro) && !ehPdf(item.ficheiro)) new Image().src = caminho("imagens", item.ficheiro);
     }
 
     function ir(n) {

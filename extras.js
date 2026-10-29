@@ -458,7 +458,7 @@
         if (letra && titulo.contains(letra)) colorir(letra);
       }));
     });
-    console.info(`[extras v6] títulos coloridos ligados em ${$$(SELETORES.titulos).length} títulos`);
+    console.info(`[extras v7] títulos coloridos ligados em ${$$(SELETORES.titulos).length} títulos`);
   }
 
 
@@ -695,6 +695,7 @@
       s.parar?.();
       s.parar = null;
       if (!s.aCorrer) return;
+      if ($(".lb-palco .pdf", dialogo)) { definirSlideshow(s, false); return; }   // um PDF lê-se com calma: o slideshow pára
       const seguinte = () => $(".lb-seg", dialogo)?.click();
       s.timer = setTimeout(() => {
         const video = $(".lb-palco video", dialogo);
@@ -705,12 +706,16 @@
       }, AJUSTES.slideshowMs);
     }
 
+    function definirSlideshow(s, ligado) {
+      s.aCorrer = ligado;
+      s.botaoPlay.innerHTML = ligado ? ICONES.pausa : ICONES.play;
+      s.botaoPlay.setAttribute("aria-pressed", String(ligado));
+      s.botaoPlay.setAttribute("aria-label", ligado ? "Parar slideshow" : "Iniciar slideshow");
+    }
+
     function alternarSlideshow(dialogo) {
       const s = estados.get(dialogo);
-      s.aCorrer = !s.aCorrer;
-      s.botaoPlay.innerHTML = s.aCorrer ? ICONES.pausa : ICONES.play;
-      s.botaoPlay.setAttribute("aria-pressed", String(s.aCorrer));
-      s.botaoPlay.setAttribute("aria-label", s.aCorrer ? "Parar slideshow" : "Iniciar slideshow");
+      definirSlideshow(s, !s.aCorrer);
       agendar(dialogo, s);
     }
 
@@ -829,7 +834,7 @@
   const SEMPRE = [contactos, ferramentas, cursos, filtrosNoUrl];
 
   document.addEventListener("DOMContentLoaded", () => {
-    document.documentElement.dataset.extras = "6";      // versão deste ficheiro (útil para confirmar a atualização)
+    document.documentElement.dataset.extras = "7";      // versão deste ficheiro (útil para confirmar a atualização)
     const opcoes = OPCOES.efeitos || {};
     SEMPRE.forEach((fn) => fn());
     EFEITOS.forEach(({ id, fn, movimento }) => {

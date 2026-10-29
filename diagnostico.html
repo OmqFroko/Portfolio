@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Diagnóstico</title>
-  <link rel="stylesheet" href="style.css?v=6">
-  <link rel="stylesheet" href="extras.css?v=6">
-  <script src="config.js?v=6"></script>
-  <script src="app.js?v=6"></script>
-  <script src="extras.js?v=6"></script>
+  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="extras.css?v=7">
+  <script src="config.js?v=7"></script>
+  <script src="app.js?v=7"></script>
+  <script src="extras.js?v=7"></script>
   <style>
     #diag { position: fixed; inset: auto 1rem 1rem 1rem; z-index: 999; max-width: 560px; margin-inline: auto;
             padding: 1rem 1.2rem; border-radius: 12px; background: #fff; color: #141B2B;
@@ -52,12 +52,12 @@
       }
 
       const versaoJs = document.documentElement.dataset.extras;
-      teste(`extras.js é a versão nova (6)`, versaoJs === "6",
+      teste(`extras.js é a versão nova (7)`, versaoJs === "7",
         versaoJs ? `O extras.js que está a ser usado é antigo (versão ${versaoJs}). Substitui-o e carrega Ctrl+F5.`
                  : "O extras.js não está a correr: não existe na pasta com este nome exato (extras.js, com \"s\"). " + passos);
 
       const versaoCss = getComputedStyle(document.documentElement).getPropertyValue("--extras-css").trim();
-      teste("extras.css é a versão nova (6)", versaoCss === "6",
+      teste("extras.css é a versão nova (7)", versaoCss === "7",
         versaoCss ? `O extras.css em uso é antigo (versão ${versaoCss}).` : "O extras.css não carregou ou é antigo. " + passos);
 
       const opc = (typeof OPCOES !== "undefined") ? OPCOES : {};
@@ -71,7 +71,7 @@
         "As letras não existem: o extras.js não correu (ver acima) ou deu erro na consola.");
       const nasSecoes = document.querySelectorAll(".secao h2 .letra-t").length;
       teste("Os títulos das secções (ex.: Competências) também têm letras animadas", nasSecoes > 0,
-        "Os títulos das secções não foram divididos em letras: confirma que o extras.js é a versão 6.");
+        "Os títulos das secções não foram divididos em letras: confirma que o extras.js é a versão 7.");
       if (letras.length) {
         const antes = letras.map(cor);
         letras[0].dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
@@ -79,7 +79,7 @@
         const mudaram = letras.filter((l, i) => cor(l) !== antes[i]).length;
         teste("Ao passar o rato numa letra, só essa letra muda de cor", mudaram === 1,
           mudaram === 0 ? "A letra não mudou de cor: diz-me isto, que investigo."
-                        : `Mudaram ${mudaram} letras em vez de 1: confirma que o extras.js é a versão 6.`);
+                        : `Mudaram ${mudaram} letras em vez de 1: confirma que o extras.js é a versão 7.`);
       }
 
       info(`Sistema com "reduzir movimento": ${matchMedia("(prefers-reduced-motion: reduce)").matches ? "sim" : "não"}`);
